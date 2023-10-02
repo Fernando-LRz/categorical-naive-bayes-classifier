@@ -14,8 +14,6 @@ class NaiveBayes:
         # Crear un diccionario para almacenar las tablas de verosimilitud
         self.likelihood_tables = {}
 
-        self.possible_classes = []
-
     def computeFrequencyTables(self) -> None:
         # Iterar sobre cada atributo y calcular su tabla de frecuencia
         for attribute in self.attributes:
@@ -23,12 +21,12 @@ class NaiveBayes:
             self.frequency_tables[attribute] = frecuency_table
 
     def computeLikelihoodTables(self) -> None:
-        # Itera sobre cada atributo en el diccionario de frecuencias
+        # Itera sobre cada tabla de frecuencia
         for attribute, frequency_table in self.frequency_tables.items():
-            # Calcula las probabilidades condicionales dividiendo la tabla de frecuencia por el total de cada clase
+            # Calcular la tabla de verosimilitud
             likelihood_table = frequency_table.div(frequency_table.sum(axis=0), axis=1)
             
-            # Almacena la tabla de verosimilitud en el diccionario con el nombre del atributo como clave
+            # Almacenar la tabla de verosimilitud en el diccionario con el nombre del atributo como clave
             self.likelihood_tables[attribute] = likelihood_table
 
 
@@ -36,4 +34,5 @@ class NaiveBayes:
         # Calcular las tablas de frecuencia
         self.computeFrequencyTables()
 
+        # Calcular las tablas de verosimilitud
         self.computeLikelihoodTables()
