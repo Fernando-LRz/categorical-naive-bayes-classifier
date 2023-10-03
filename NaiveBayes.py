@@ -17,8 +17,12 @@ class NaiveBayes:
     def computeFrequencyTables(self) -> None:
         # Iterar sobre cada atributo y calcular su tabla de frecuencia
         for attribute in self.attributes:
-            frecuency_table = pandas.crosstab(self.training_dataset[attribute], self.training_dataset[self.class_name]) # filas, columnas
-            self.frequency_tables[attribute] = frecuency_table
+            frequency_table = pandas.crosstab(self.training_dataset[attribute], self.training_dataset[self.class_name]) # filas, columnas
+            
+            # Aplicar el suavizado sumando 1 a todas las frecuencias
+            smoothed_frequency_table = frequency_table + 1
+
+            self.frequency_tables[attribute] = smoothed_frequency_table
 
     def computeLikelihoodTables(self) -> None:
         # Itera sobre cada tabla de frecuencia
@@ -26,8 +30,49 @@ class NaiveBayes:
             # Calcular la tabla de verosimilitud
             likelihood_table = frequency_table.div(frequency_table.sum(axis=0), axis=1)
             
-            # Almacenar la tabla de verosimilitud en el diccionario con el nombre del atributo como clave
+            # Almacenar la tabla de verosimilitud en el diccionario
             self.likelihood_tables[attribute] = likelihood_table
+
+    def evaluate(self, test_dataset) -> None:
+        # Inicializa una lista para almacenar las predicciones de clase
+        predictions = []
+
+        # Inicializa una lista de clases únicas en tus datos de entrenamiento
+        classes = self.training_dataset[self.class_name].unique()
+
+        # Itera sobre cada instancia del conjunto de prueba
+        for index, test_instance in test_dataset.iterrows():
+            # Inicializa un diccionario para almacenar las probabilidades a posteriori para cada clase
+            posterior_probabilities = {}
+
+            # Itera sobre cada clase
+            for class_ in classes:
+                posterior_probability = 1.0  # Inicializa la probabilidad a posteriori para la clase
+
+                # Itera sobre cada atributo en la instancia de prueba
+                for attribute, value in test_instance.iloc[:-1].items():
+                    # Accede a la tabla de verosimilitud correspondiente al atributo
+                    likelihood_table = self.likelihood_tables[attribute]
+
+                    # Obtiene la probabilidad condicional P(x | C_k) para el valor del atributo
+                    conditional_probability = likelihood_table.at[value, class_]
+
+                    # Multiplica la probabilidad condicional por la probabilidad a posteriori
+                    posterior_probability *= conditional_probability
+
+                # Calcula la probabilidad a priori P(C_k)
+                prior_probability = len(self.training_dataset[self.training_dataset[self.class_name] == class_]) / len(self.training_dataset)
+
+                # Calcula la probabilidad a posteriori final para la clase
+                posterior_probabilities[class_] = prior_probability * posterior_probability
+
+            # Ahora, "posterior_probabilities" contiene las probabilidades a posteriori para cada clase
+            # Puedes seleccionar la clase con la probabilidad más alta como la predicción final
+            predicted_class = max(posterior_probabilities, key=posterior_probabilities.get)
+            predictions.append(predicted_class)
+
+        # Ahora, "predictions" contiene las predicciones de clase para todas las instancias de prueba
+        # print(predictions)
 
 
     def fit(self) -> None:

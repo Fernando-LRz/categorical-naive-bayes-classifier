@@ -25,12 +25,19 @@ def main():
     training_dataset = dataset.sample(number_of_instances)
 
     # Definir el set de datos de prueba
-    # test_dataset = dataset.drop(training_dataset.index)
+    test_dataset = dataset.drop(training_dataset.index)
 
     # Crear una instancia de la clase NaiveBayes
-    naiveBayes = NaiveBayes(dataset, attributes, class_name)
+    naiveBayes = NaiveBayes(training_dataset, attributes, class_name)
 
     naiveBayes.fit()
+    # naiveBayes.evaluate(test_dataset)
+
+    print('Tablas de frecuencia')
+    print()
+    for i, value in naiveBayes.frequency_tables.items():
+        print(value)
+        print()
 
     print('Tablas de verosimilitud')
     print()
