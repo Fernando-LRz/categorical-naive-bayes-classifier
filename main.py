@@ -31,19 +31,23 @@ def main():
     naiveBayes = NaiveBayes(training_dataset, attributes, class_name)
 
     naiveBayes.fit()
-    # naiveBayes.evaluate(test_dataset)
 
-    print('Tablas de frecuencia')
+    # print('Tablas de frecuencia')
+    # print()
+    # for i, value in naiveBayes.frequency_tables.items():
+    #     print(value)
+    #     print()
+
+    print(test_dataset)
     print()
-    for i, value in naiveBayes.frequency_tables.items():
-        print(value)
-        print()
 
     print('Tablas de verosimilitud')
     print()
     for i, value in naiveBayes.likelihood_tables.items():
         print(value)
         print()
+
+    naiveBayes.evaluate(test_dataset)
 
 # Ejecutar el main
 if __name__ == '__main__':

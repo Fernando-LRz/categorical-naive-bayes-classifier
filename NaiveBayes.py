@@ -19,9 +19,10 @@ class NaiveBayes:
         for attribute in self.attributes:
             frequency_table = pandas.crosstab(self.training_dataset[attribute], self.training_dataset[self.class_name]) # filas, columnas
             
-            # Aplicar el suavizado sumando 1 a todas las frecuencias
+            # Aplicar el suavizado, sumando 1 a todas las frecuencias
             smoothed_frequency_table = frequency_table + 1
 
+            # Almacenar la tabla de frecuencia en el diccionario
             self.frequency_tables[attribute] = smoothed_frequency_table
 
     def computeLikelihoodTables(self) -> None:
@@ -40,7 +41,7 @@ class NaiveBayes:
         # Inicializa una lista de clases únicas en tus datos de entrenamiento
         classes = self.training_dataset[self.class_name].unique()
 
-        # Itera sobre cada instancia del conjunto de prueba
+        # Itera sobre cada instancia en el conjunto de prueba
         for index, test_instance in test_dataset.iterrows():
             # Inicializa un diccionario para almacenar las probabilidades a posteriori para cada clase
             posterior_probabilities = {}
@@ -49,21 +50,22 @@ class NaiveBayes:
             for class_ in classes:
                 posterior_probability = 1.0  # Inicializa la probabilidad a posteriori para la clase
 
-                # Itera sobre cada atributo en la instancia de prueba
+                # Itera sobre cada atributo en la instancia de prueba, excluyendo la columna de clase
                 for attribute, value in test_instance.iloc[:-1].items():
                     # Accede a la tabla de verosimilitud correspondiente al atributo
                     likelihood_table = self.likelihood_tables[attribute]
 
-                    # Obtiene la probabilidad condicional P(x | C_k) para el valor del atributo
+                    # Obtener Pr[ A | H ] para el valor del atributo
                     conditional_probability = likelihood_table.at[value, class_]
+                    print(class_, attribute, conditional_probability)
 
-                    # Multiplica la probabilidad condicional por la probabilidad a posteriori
+                    # Multiplica la probabilidad condicional por la probabilidad a posteriori Pr[H]
                     posterior_probability *= conditional_probability
 
-                # Calcula la probabilidad a priori P(C_k)
+                # Calcula la probabilidad a priori Pr[H] para la clase
                 prior_probability = len(self.training_dataset[self.training_dataset[self.class_name] == class_]) / len(self.training_dataset)
 
-                # Calcula la probabilidad a posteriori final para la clase
+                # Calcula la probabilidad a posteriori final Pr[H|A] para la clase
                 posterior_probabilities[class_] = prior_probability * posterior_probability
 
             # Ahora, "posterior_probabilities" contiene las probabilidades a posteriori para cada clase
@@ -72,7 +74,7 @@ class NaiveBayes:
             predictions.append(predicted_class)
 
         # Ahora, "predictions" contiene las predicciones de clase para todas las instancias de prueba
-        # print(predictions)
+        
 
 
     def fit(self) -> None:
