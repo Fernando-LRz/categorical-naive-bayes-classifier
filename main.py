@@ -32,20 +32,25 @@ def main():
 
     naiveBayes.fit()
 
+    # print('Conjunto de entrenamiento')
+    # print(training_dataset)
+    # print()
+
+    # print('Conjunto de prueba')
+    # print(test_dataset)
+    # print()
+
     # print('Tablas de frecuencia')
     # print()
     # for i, value in naiveBayes.frequency_tables.items():
     #     print(value)
     #     print()
 
-    print(test_dataset)
-    print()
-
-    print('Tablas de verosimilitud')
-    print()
-    for i, value in naiveBayes.likelihood_tables.items():
-        print(value)
-        print()
+    # print('Tablas de verosimilitud')
+    # print()
+    # for i, value in naiveBayes.likelihood_tables.items():
+    #     print(value)
+    #     print()
 
     naiveBayes.evaluate(test_dataset)
 
