@@ -2,11 +2,11 @@ import pandas
 
 class NaiveBayes:
 
-    def __init__(self, training_dataset, attributes, class_name) -> None:       
+    def __init__(self, training_dataset) -> None:       
         # Inicializar los atributos
         self.training_dataset = training_dataset
-        self.class_name = class_name
-        self.attributes = attributes
+        self.class_name = training_dataset.columns[-1]
+        self.attributes = training_dataset.columns[:-1]
 
         # Crear un diccionario para almacenar las tablas de frecuencia
         self.frequency_tables = {}
@@ -46,16 +46,9 @@ class NaiveBayes:
             # Crear un diccionario para almacenar las probabilidades a posteriori para cada clase
             posterior_probabilities = {}
 
-            # print('------------------------------------')
-            # print(test_instance)
-            # print()
-
             # Iterar sobre cada clase
             for class_ in classes:
                 posterior_probability = 1.0  # Inicializar la probabilidad a posteriori para la clase
-
-                # print('------', class_, '------')
-                # print()
 
                 # Iterar sobre cada atributo en la instancia de prueba, excluyendo la columna de clase
                 for attribute, value in test_instance.iloc[:-1].items():
@@ -65,49 +58,18 @@ class NaiveBayes:
                     # Obtener el valor en la tabla de verosimilitud para el valor de la instancia
                     value_in_likelihood_table = likelihood_table.at[value, class_]
 
-                    # print('valor del atributo: ', value) 
-                    # print()
-                    # print(likelihood_table) 
-                    # print()
-                    # print('valor en la tabla de verosimilitud: ', likelihood_table.at[value, class_])
-                    # print()
-
                     # Multiplicar la probabilidad a posteriori de la clase por el valor obtenido de la tabla
                     posterior_probability *= value_in_likelihood_table
-
-                # print('------ probabilidades ------') 
-                # print()
-                # print('probabilidad a posteriori Pr[A|H]: ', posterior_probability) 
-                # print()
                 
                 # Calcular la probabilidad a priori para la clase
                 prior_probability = len(self.training_dataset[self.training_dataset[self.class_name] == class_]) / len(self.training_dataset)
 
-                # print('probabilidad a priori para la clase: ', len(self.training_dataset[self.training_dataset[self.class_name] == class_]) , ' / ', len(self.training_dataset)) 
-                # print()
-
                 # Calcular la probabilidad a posteriori final para la clase
                 posterior_probabilities[class_] = prior_probability * posterior_probability
-
-                # print('probabilidad a posteriori de la clase dada la instancia Pr[H|A]: ', prior_probability * posterior_probability) 
-                # print()
-
-            # print('------ probabilidades posteriores ------') 
-            # print()
-            # print('probabilidades posteriores: ', posterior_probabilities) 
-            # print()
 
             # Seleccionar la clase con la probabilidad más alta
             predicted_class = max(posterior_probabilities, key=posterior_probabilities.get)
             predictions.append(predicted_class)
-
-            # print('clase más probable: ', predicted_class) 
-            # print()
-        
-        print('------ Resultados ------') 
-        print()
-        print('Predicciones: ', predictions) 
-        print()
 
         # Copiar el conjunto de entrenamiento en un dataframe nuevo
         result = test_dataset.copy()
@@ -119,10 +81,6 @@ class NaiveBayes:
         result['Match'] = result[self.class_name] == result['Prediction']
 
         return result
-
-    def computeConfusionMatrix(self, result) -> pandas.DataFrame:
-        confusion_matrix = pandas.crosstab(result['Prediction'], result[self.class_name], rownames=['Predicted'], colnames=['Expected'])
-        return confusion_matrix
 
     def fit(self) -> None:
         # Calcular las tablas de frecuencia
