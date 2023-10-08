@@ -32,27 +32,45 @@ def main():
 
     naiveBayes.fit()
 
-    # print('Conjunto de entrenamiento')
-    # print(training_dataset)
-    # print()
+    frequency_tables = naiveBayes.getFrequencyTables()
+    likelihood_tables = naiveBayes.getLikelihoodTables()
 
-    # print('Conjunto de prueba')
-    # print(test_dataset)
-    # print()
+    print()
+    print('Conjunto de entrenamiento')
+    print()
+    print(training_dataset)
 
-    # print('Tablas de frecuencia')
-    # print()
-    # for i, value in naiveBayes.frequency_tables.items():
-    #     print(value)
-    #     print()
+    print()
+    print('Conjunto de prueba')
+    print()
+    print(test_dataset)
+   
+    print()
+    print('Tablas de frecuencia')
+    print()
+    for i, value in frequency_tables.items():
+        print(value)
+        print()
 
-    # print('Tablas de verosimilitud')
-    # print()
-    # for i, value in naiveBayes.likelihood_tables.items():
-    #     print(value)
-    #     print()
+    print('Tablas de verosimilitud')
+    print()
+    for i, value in likelihood_tables.items():
+        print(value)
+        print()
+    
+    result = naiveBayes.evaluate(test_dataset)
+    confusion_matrix = naiveBayes.computeConfusionMatrix(result)
 
-    naiveBayes.evaluate(test_dataset)
+    print('Evaluación del modelo')
+    print()
+    print(result)
+
+    print()
+    print('Tabla de confusión')
+    print()
+    print(confusion_matrix)
+
+    print()
 
 # Ejecutar el main
 if __name__ == '__main__':

@@ -14,9 +14,6 @@ class NaiveBayes:
         # Crear un diccionario para almacenar las tablas de verosimilitud
         self.likelihood_tables = {}
 
-        # Crear un DataFrame para los resultados
-        self.result = None
-
     def computeFrequencyTables(self) -> None:
         # Iterar sobre cada atributo y calcular su tabla de frecuencia
         for attribute in self.attributes:
@@ -37,7 +34,7 @@ class NaiveBayes:
             # Almacenar la tabla de verosimilitud en el diccionario
             self.likelihood_tables[attribute] = likelihood_table
 
-    def evaluate(self, test_dataset) -> None:
+    def evaluate(self, test_dataset) -> pandas.DataFrame:
         # Crear una lista para almacenar las predicciones de clase
         predictions = []
 
@@ -107,22 +104,25 @@ class NaiveBayes:
             # print('clase más probable: ', predicted_class) 
             # print()
         
-        print('------ resultados ------') 
+        print('------ Resultados ------') 
         print()
-        print('clases predecidas: ', predictions) 
+        print('Predicciones: ', predictions) 
         print()
 
-        # Copiar el conjunto de entramiento en result
-        self.result = test_dataset.copy()
+        # Copiar el conjunto de entrenamiento en un dataframe nuevo
+        result = test_dataset.copy()
 
-        # Agregar la lista de predicciones como una nueva columna al DataFrame
-        self.result['Prediction'] = predictions
+        # Agregar la lista de predicciones como una nueva columna al dataframe result
+        result['Prediction'] = predictions
 
-        # Comparar la predicción con la clase real
-        self.result['Match'] = self.result[self.class_name] == self.result['Prediction']
+        # Agregar una columna con la comparación entre la predicción y la clase real
+        result['Match'] = result[self.class_name] == result['Prediction']
 
-        # Muestra el DataFrame resultante
-        print(self.result)
+        return result
+
+    def computeConfusionMatrix(self, result) -> pandas.DataFrame:
+        confusion_matrix = pandas.crosstab(result['Prediction'], result[self.class_name], rownames=['Predicted'], colnames=['Expected'])
+        return confusion_matrix
 
     def fit(self) -> None:
         # Calcular las tablas de frecuencia
@@ -130,3 +130,9 @@ class NaiveBayes:
 
         # Calcular las tablas de verosimilitud
         self.computeLikelihoodTables()
+
+    def getFrequencyTables(self) -> dict:
+        return self.frequency_tables
+    
+    def getLikelihoodTables(self) -> dict:
+        return self.likelihood_tables
